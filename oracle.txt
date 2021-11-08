@@ -1,0 +1,592 @@
+//even or odd 
+
+#include<stdio.h>
+int main()
+{
+    char msg[10],tmsg[20],error;
+    int count=0,flag,len=0,pos;
+    printf("Enter Message :");
+    scanf("%[^\n]s",msg);
+    for(int i=0;msg[i]!='\0';i++)
+    {
+        len++;
+        if(msg[i]=='1')
+        {
+        count++;
+        }
+        tmsg[i]=msg[i];
+    }
+    if(count%2==0)
+    {
+        printf("\nEven parity");
+        flag=0;
+    }
+    else
+    {
+        printf("\nOdd parity");
+        flag=1;
+    }
+    if(flag==0)
+    {
+
+        tmsg[len]='1';
+    }
+    else
+    {
+
+        tmsg[len]='0';
+    }
+    printf("\nDo you want to Introduce error(y/n):");
+    scanf(" %c",&error);
+    if(error=='y')
+    {
+        printf("\nEnter the position : 1 (condition : position between 1 to %d size) :",len+1);
+        scanf("%d",&pos);
+        if(pos>0 && pos <len+1)
+        {
+            if(tmsg[pos-1]=='1')
+            {
+                tmsg[pos-1]='0';
+            }
+            else
+            {
+                tmsg[pos-1]='1';
+            }
+            printf("\nMessage received at the Receiver : %s",tmsg);
+            printf("\nError in message");
+        }
+
+    }
+    else{
+    printf("\n");
+    printf("\nMessage received at the Receiver : %s\n",tmsg);
+    printf("No error in message");
+    }
+}
+
+//CRC
+
+#include<stdio.h>
+
+int power(int a,int b)
+{
+    if(b==0)
+    {
+        return 1;
+    }
+    if(b==1)
+    {
+        return a;
+    }
+    return a* power(a,b-1);
+}
+
+int main()
+{
+ char msg[20],pat[20],append[20],t[10];
+ int msgsize=0,patsize=0,fcssize;
+ int div=0,quot=0;
+
+ printf("Enter message :");
+ scanf("%s",msg);
+ for(int i=0;msg[i]!='\0';i++)
+ {
+    msgsize++;
+ }
+ printf("\nEnter pattern :");
+ scanf("%s",pat);
+ for(int i=0;pat[i]!='\0';i++)
+ {
+    patsize++;
+ }
+ printf("\nGiven message is : %s",msg);
+ printf("\nGiven pattern is : %s",pat);
+ printf("\nMessage size is :%d",msgsize);
+ printf("\nPattren size is :%d",patsize);
+ fcssize=patsize-1;
+ printf("\nFCS             :%d",fcssize);
+ int j=0;
+ for(int k=0;k<msgsize+fcssize;k++)
+ {
+    append[k]='0';
+ }
+ for(j;msg[j]!='\0';j++)
+ {
+    append[j]=msg[j];
+ }
+
+int msghold=msgsize;
+
+ for(int j=msgsize;j<msgsize+fcssize;j++)
+ {
+    append[j]='0';
+ }
+ append[msgsize+fcssize]='\0';
+printf("\n");
+ printf("\n After appending Q is :%s",append);
+int appendsize=0;
+for(int i=0;append[i]!='\0';i++)
+{
+    appendsize++;
+}
+ int pos=0,temp=appendsize-1;
+
+ while(temp>0)
+ {
+    pos++;
+    char hol=append[temp-1];
+    int hold=hol-'0';
+
+    div=div+(hold*power(2,pos));
+    temp--;
+
+ }
+ temp=patsize;
+ pos=0;
+ while(temp>0)
+ {
+    pos++;
+    char hol=pat[temp-1];
+    int hold=hol-'0';
+
+    quot=quot+hold*power(2,pos);
+    temp--;
+ }
+ int rem=div%quot;
+ printf("\nffff%d,%d,%d",div,quot,rem);
+ int flag=1;
+ int val,qval;
+ int i=0;
+ while(flag==1)
+ {
+    rem=rem/2;
+    val=rem%2;
+    char c=val+'0'-1;
+    t[i++]=c;
+    if(rem==1)
+    {
+        t[i++]='1';
+        flag=0;
+    }
+    else if(rem==0)
+    {
+        t[i++]='0';
+        flag=0;
+    }
+
+
+ }
+ char remhold[10];
+ int q=i;
+
+
+ msghold=msgsize;
+ for(int i=fcssize-1;i>=0;i--)
+ {
+    append[msgsize++]=t[i];
+ }
+
+ printf("\nMessage to be transmitted is %s",append);
+ printf("\nDo you want to introduce error ?(y/n)");
+ char y;
+ scanf(" %c",&y);
+ int n;
+ if(y=='y')
+ {
+    printf("\nEnter the position :(1 to %d) :",msgsize+fcssize);
+    scanf("%d",&n);
+    if(append[n-1]=='0')
+    {
+        append[n-1]='1';
+
+    }else{
+        append[n-1]='0';
+    }
+
+ }
+
+ printf("\n");
+ printf("\nMessage recieved at the receiver : %s",append);
+ printf("\nRemainder :");
+ for(int i=fcssize;i>=0;i--)
+ {
+ printf("%c",t[i]);
+ }
+
+
+}
+
+
+
+
+
+
+
+
+
+as5-1
+#Create a simulator object
+
+set ns [new Simulator]
+
+
+#Open a nam trace file
+
+set nf [open PING.nam w]
+
+$ns namtrace-all $nf
+
+
+
+#Open a trace file
+
+set nt [open PING.tr w]
+
+$ns trace-all $nt
+
+
+
+
+#Define a finish procedure
+
+proc finish {} {
+
+            global ns nf nt
+
+            $ns flush-trace
+
+            close $nf
+
+               close $nt
+
+            exec nam PING.nam &
+
+            exit 0
+
+     }
+
+
+#Create six  nodes
+
+   set n0 [$ns node]
+
+   set n1 [$ns node]
+
+   set n2 [$ns node]
+
+   set n3 [$ns node]
+
+   set n4 [$ns node]
+
+   set n5 [$ns node]
+
+
+
+
+# Connect the nodes with two links    
+
+   $ns duplex-link $n0 $n1 1Mb 10ms DropTail
+
+   $ns duplex-link $n2 $n1 1Mb 10ms DropTail
+
+   $ns duplex-link $n3 $n1 1Mb 10ms DropTail
+
+   $ns duplex-link $n4 $n1 1Mb 10ms DropTail
+
+   $ns duplex-link $n5 $n1 1Mb 10ms DropTail
+
+
+
+
+#Set queue length     
+
+   $ns queue-limit $n0 $n1 5
+
+   $ns queue-limit $n2 $n1 2
+
+   $ns queue-limit $n3 $n1 5
+
+   $ns queue-limit $n4 $n1 2
+
+   $ns queue-limit $n5 $n1 2
+
+#Label the nodes     
+
+   $n0 label "ping0"
+
+   $n1 label "Router"
+
+   $n2 label "ping2"
+
+   $n3 label "ping3"
+
+   $n4 label "ping4"
+
+   $n5 label "ping5"
+
+     
+
+#Color the flow
+
+   $ns color 2 Blue
+
+   $ns color 3 Red
+
+   $ns color 4 Yellow
+
+   $ns color 5 Green
+
+
+
+#Define s ‘recv’ function for the class ‘Agent/Ping’    
+
+   Agent/Ping instproc recv {from rtt} {
+
+      $self instvar node_
+
+      puts "node [$node_ id] received ping answer from \
+
+      $from with round-trip-time $rtt ms."
+
+   }
+
+
+
+
+#Create ping agents and attach them to the nodes     
+
+   set p0 [new Agent/Ping]
+
+   $ns attach-agent $n0 $p0
+
+   $p0 set class_ 1
+
+     
+
+   set p2 [new Agent/Ping]
+
+   $ns attach-agent $n2 $p2
+
+   $p2 set class_ 2
+
+    
+
+   set p3 [new Agent/Ping]
+
+   $ns attach-agent $n3 $p3
+
+   $p3 set class_ 3
+
+     
+
+   set p4 [new Agent/Ping]
+
+   $ns attach-agent $n4 $p4
+
+   $p4 set class_ 4
+
+     
+
+   set p5 [new Agent/Ping]
+
+   $ns attach-agent $n5 $p5
+
+   $p5 set class_ 5
+
+
+
+#Connect the two agents     
+
+   $ns connect $p2 $p5
+
+   $ns connect $p3 $p5
+
+     
+
+    proc SendPingPacket { } {
+
+      global ns p2 p3
+
+      set intervalTime 0.001
+
+      set now [$ns now]
+
+      $ns at [expr $now+$intervalTime] "$p2 send"
+
+      $ns at [expr $now+$intervalTime] "$p3 send"
+
+      $ns at [expr $now+$intervalTime] "SendPingPacket"
+
+    }
+
+     
+
+      $ns at 0.1 "SendPingPacket"
+
+      $ns at 2.0 "finish"
+
+      $ns run
+
+     
+
+
+AWK FILE:(Open a new editor using “gedit command” and write awk file and save with “.awk” extension)
+
+BEGIN{
+
+count=0;
+
+}
+
+{
+
+            if($1==”d”)
+
+                        count++;
+
+}
+
+END{
+
+            printf (“No. of packets dropped is= %d\n”, count);
+
+}
+
+as5-3 ring
+set ns [new Simulator]
+$ns rtproto DV
+
+set nf [open out.nam w]
+$ns namtrace-all $nf
+
+proc finish {} {
+        global ns nf
+        $ns flush-trace
+        close $nf
+        exec nam out.nam
+        exit 0
+        }
+
+#Creating Nodes
+for {set i 0} {$i<7} {incr i} {
+set n($i) [$ns node]
+}
+
+#Creating Links
+for {set i 0} {$i<7} {incr i} {
+$ns duplex-link $n($i) $n([expr ($i+1)%7]) 512Kb 5ms DropTail
+}
+
+$ns duplex-link-op $n(0) $n(1) queuePos 1
+$ns duplex-link-op $n(0) $n(6) queuePos 1
+
+#Creating UDP agent and attching to node 0
+set udp0 [new Agent/UDP]
+$ns attach-agent $n(0) $udp0
+
+#Creating Null agent and attaching to node 3
+set null0 [new Agent/Null]
+$ns attach-agent $n(3) $null0
+
+$ns connect $udp0 $null0
+
+
+#Creating a CBR agent and attaching it to udp0
+set cbr0 [new Application/Traffic/CBR]
+$cbr0 set packetSize_ 1024
+$cbr0 set interval_ 0.01
+$cbr0 attach-agent $udp0
+
+$ns rtmodel-at 0.4 down $n(2) $n(3)
+$ns rtmodel-at 1.0 up $n(2) $n(3)
+
+$ns at 0.01 "$cbr0 start"
+$ns at 1.5 "$cbr0 stop"
+
+$ns at 2.0 "finish"
+$ns run
+
+as5-2 star
+
+set ns  [new Simulator]
+
+$ns color 1 blue
+$ns color 2 red
+
+$ns rtproto DV
+
+set nf [open out.nam w]
+$ns namtrace-all $nf
+
+proc finish {} {
+        global ns nf
+        $ns flush-trace
+        close $nf
+        exec nam out.nam
+        exit 0
+        }
+
+#creating Nodes        
+for {set i 0} {$i<7} {incr i} {
+set n($i) [$ns node]
+}
+
+#Creating Links
+for {set i 1} {$i<7} {incr i} {
+$ns duplex-link $n(0) $n($i) 512Kb 10ms SFQ
+}
+
+#Orienting The nodes
+$ns duplex-link-op $n(0) $n(1) orient left-up
+$ns duplex-link-op $n(0) $n(2) orient right-up
+$ns duplex-link-op $n(0) $n(3) orient right
+$ns duplex-link-op $n(0) $n(4) orient right-down
+$ns duplex-link-op $n(0) $n(5) orient left-down
+$ns duplex-link-op $n(0) $n(6) orient left
+
+#TCP_Config
+set tcp0 [new Agent/TCP]
+$tcp0 set class_ 1
+$ns attach-agent $n(1) $tcp0
+
+set sink0 [new Agent/TCPSink]
+$ns attach-agent $n(4) $sink0
+
+$ns connect $tcp0 $sink0
+
+#UDP_Config
+set udp0 [new Agent/UDP]
+$udp0 set class_ 2
+$ns attach-agent $n(2) $udp0
+
+set null0 [new Agent/Null]
+$ns attach-agent $n(5) $null0
+
+$ns connect $udp0 $null0
+
+#CBR Config
+set cbr0 [new Application/Traffic/CBR]
+$cbr0 set rate_ 256Kb
+$cbr0 attach-agent $udp0
+
+#FTP Config
+set ftp0 [new Application/FTP]
+$ftp0 attach-agent $tcp0
+
+
+#Scheduling Events
+$ns rtmodel-at 0.5 down $n(0) $n(5)
+$ns rtmodel-at 0.9 up $n(0) $n(5)
+
+$ns rtmodel-at 0.7 down $n(0) $n(4)
+$ns rtmodel-at 1.2 up $n(0) $n(4)
+
+$ns at 0.1 "$ftp0 start"
+$ns at 1.5 "$ftp0 stop"
+
+$ns at 0.2 "$cbr0 start"
+$ns at 1.3 "$cbr0 stop"
+
+$ns at 2.0 "finish"
+$ns run
+
